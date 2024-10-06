@@ -15,14 +15,11 @@ chrono = "0.4.38"
 serde_json = "1"
 log = "0.4.22"
 
-[target.'cfg(windows)'.dependencies]
+[target.'cfg(target_os = "windows")'.dependencies]
 winapi = { version = "0.3", features = ["winuser"] }
 
-[target.'cfg(macos)'.dependencies]
+[target.'cfg(target_os = "macos")'.dependencies]
 core-graphics = { version = "0.19.0", features = ["highsierra"] }
-core-foundation-sys = "0.7"
-core-foundation = "0.7"
-cocoa = "0.22"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-global-shortcut = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }

@@ -1,4 +1,4 @@
-use core_graphics::event::{CGEvent, CGEventType, CGMouseButton};
+use core_graphics::event::{CGPoint, CGEvent, CGEventType, CGMouseButton};
 use core_graphics::event_source::CGEventSource;
 use std::time::Duration;
 use std::thread::sleep;
