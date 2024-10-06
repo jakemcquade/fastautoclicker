@@ -27,8 +27,9 @@ impl Keylike for Button {
             Button::Middle => CGMouseButton::Center,
         };
 
-        let point = get_current_mouse_location()?;
-        CGEvent::new_mouse_event(CGEventSource::new(CGEventSource::HIDSystemState).unwrap(), event_type, point, button).unwrap()
+        let point = get_current_mouse_location().ok_or(std::io::Error::new(std::io::ErrorKind::Other, "Failed to get mouse location"))?;
+        let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState);
+        CGEvent::new_mouse_event(source, event_type, point, button).unwrap()
     }
 }
 
@@ -43,7 +44,8 @@ pub fn send<K: Keylike>(key: K) {
     let press_event = key.produce_input(Action::Press);
     let release_event = key.produce_input(Action::Release);
 
-    press_event.post(CGEventSource::HIDSystemState);
+    let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState);
+    press_event.post(source)?;
     // sleep(Duration::from_millis(1));
-    release_event.post(CGEventSource::HIDSystemState);
+    release_event.post(source)?;
 }
