@@ -6,15 +6,16 @@
         <img src="https://img.shields.io/github/downloads/jakemcquade/fastautoclicker/total.svg?style=for-the-badge&color=ffffff&logo=docusign&logoColor=white" />
     </a>
     <a href="https://github.com/jakemcquade/fastautoclicker/releases">
-        <img src="https://img.shields.io/github/v/release/jakemcquade/fastautoclicker?style=for-the-badge&logo=github&color=blue">
+        <img src="https://img.shields.io/github/v/release/jakemcquade/fastautoclicker?style=for-the-badge&logo=github&color=blue" />
     </a>
 </div>
 
 <br />
 
 <div align="center">
-<img src="https://github.com/user-attachments/assets/" height="400px" />
+    <img src="https://github.com/user-attachments/assets/12f5c762-b88b-40ef-8cd7-9e85b5a2dc97" height="400px" />
 </div>
+
 <br />
 <br />
 
