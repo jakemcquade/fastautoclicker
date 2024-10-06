@@ -1,7 +1,8 @@
-use core_graphics::event::{CGPoint, CGEvent, CGEventType, CGMouseButton};
-use core_graphics::event_source::CGEventSource;
-use std::time::Duration;
-use std::thread::sleep;
+use core_graphics::event::{ CGEvent, CGEventType, CGMouseButton };
+use core_graphics::event_source::{ CGEventSource, CGEventSourceStateID };
+use core_graphics::geometry::CGPoint;
+// use std::time::Duration;
+// use std::thread::sleep;
 
 use crate::inputs::{ Action, Button };
 
