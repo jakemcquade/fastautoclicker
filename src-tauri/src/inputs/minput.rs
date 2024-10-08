@@ -1,55 +1,42 @@
 use core_graphics::{
     event::{ CGEvent, CGEventType, CGEventTapLocation, CGMouseButton },
-    event_source::{ CGEventSource, CGEventSourceStateID },
-    geometry::{ CGPoint }
+    event_source::{ CGEventSource, CGEventSourceStateID }
 };
 
 use crate::inputs::{Action, Button};
 pub trait Keylike: Copy {
-    fn produce_input(self, action: Action) -> Result<CGEvent, std::io::Error>;
+    fn produce_input(self, action: Action) -> CGEvent;
 }
 
 impl Keylike for Button {
-    fn produce_input(self, action: Action) -> Result<CGEvent, std::io::Error> {
-        if (action == Action::Press) {
-            let event_type = match (self, action) {
-                (Button::Left, Action::Press) => CGEventType::LeftMouseDown,
-                (Button::Right, Action::Press) => CGEventType::RightMouseDown,
-                (Button::Middle, Action::Press) => CGEventType::OtherMouseDown
-            };
-    
-            let button = match self {
-                Button::Left => CGMouseButton::Left,
-                Button::Right => CGMouseButton::Right,
-                Button::Middle => CGMouseButton::Center
-            };
-    
-            let point = get_current_mouse_location().ok_or(std::io::Error::new(std::io::ErrorKind::Other, "Failed to get mouse location"))?;
-            let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState)
-                .ok_or(std::io::Error::new(std::io::ErrorKind::Other, "Failed to create CGEventSource"))?;
-            
+    fn produce_input(self, action: Action) -> CGEvent {
+        let event_type = match (self, action) {
+            (Button::Left, Action::Press) => CGEventType::LeftMouseDown,
+            (Button::Left, Action::Release) => CGEventType::LeftMouseUp,
+            (Button::Right, Action::Press) => CGEventType::RightMouseDown,
+            (Button::Right, Action::Release) => CGEventType::RightMouseUp,
+            (Button::Middle, Action::Press) => CGEventType::OtherMouseDown,
+            (Button::Middle, Action::Release) => CGEventType::OtherMouseUp
+        };
+
+        let button = match self {
+            Button::Left => CGMouseButton::Left,
+            Button::Right => CGMouseButton::Right,
+            Button::Middle => CGMouseButton::Center
+        };
+
+        if action == Action::Press {
+            let point = get_mouse_position();
+            let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState);
             CGEvent::new_mouse_event(source, event_type, point, button)
-                .ok_or(std::io::Error::new(std::io::ErrorKind::Other, "Failed to create mouse event"))
-        } else {
-            let event_type = match (self, action) {
-                (Button::Left, Action::Release) => CGEventType::LeftMouseUp,
-                (Button::Right, Action::Release) => CGEventType::RightMouseUp,
-                (Button::Middle, Action::Release) => CGEventType::OtherMouseUp
-            };
-    
-            let button = match self {
-                Button::Left => CGMouseButton::Left,
-                Button::Right => CGMouseButton::Right,
-                Button::Middle => CGMouseButton::Center
-            };
-    
+        } else {    
             let position  = match get_mouse_position() {
                 Mouse::Position { x, y } => Position { x, y },
-                Mouse::Error => std::io::Error::new(std::io::ErrorKind::Other, "Faield to get mouse position")
+                Mouse::Error => Position { x: 0, y: 0 }
             };
 
-            let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState).ok_or(std::io::Error::new(std::io::ErrorKind::Other, "Failed to create CGEventSource"))?;
-            CGEvent::new_mouse_event(source, event_type, position, button).ok_or(std::io::Error::new(std::io::ErrorKind::Other, "Failed to create mouse event"))
+            let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState);
+            CGEvent::new_mouse_event(source, event_type, position, button);
         }
     }
 }
@@ -70,12 +57,11 @@ fn get_mouse_position() -> Mouse {
 }
 
 #[inline(always)]
-pub fn send<K: Keylike>(key: K) -> Result<(), io::Error> {
+pub fn send<K: Keylike>(key: K) -> Result<(), std::io::Error> {
     let press_event = key.produce_input(Action::Press)?;
     let release_event = key.produce_input(Action::Release)?;
-    let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState)
-        .ok_or(io::Error::new(io::ErrorKind::Other, "Failed to create CGEventSource"))?;
-    
+    let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState)?;
+
     press_event.post(CGEventTapLocation::HID);
     release_event.post(CGEventTapLocation::HID);
     
