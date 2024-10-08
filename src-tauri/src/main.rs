@@ -172,7 +172,7 @@ fn app_toggle(
         }
     }
 
-    info!("State: {}", *status);
+    info!("State: {}", if *status { "Enabled" } else { "Disabled" });
     return *status;
 }
 
@@ -281,7 +281,7 @@ fn main() {
                             }
 
                             app.emit("state", *status).unwrap();
-                            info!("State: {}", *status);
+                            info!("State: {}", if *status { "Enabled" } else { "Disabled" });
                         }
                     })
                     .build(),
@@ -292,7 +292,6 @@ fn main() {
         .plugin(
             tauri_plugin_log::Builder::default()
                 .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::LogDir { file_name: None }))
-                .target(tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout))
                 .format(move |out, message, record| {
                     out.finish(format_args!("{}[{}] {}", chrono::Local::now().format(format!("[%Y-%m-%d][%H:%M:%S]").as_str()), record.level(), message))
                 })
