@@ -145,28 +145,12 @@ fn app_toggle(
         let interval = std::time::Duration::from_millis(time);
         let mtype = mouse_button.clone().to_owned();
         let ctype = click_type.clone().to_owned();
+        
+        info!("Spawning Click Thread... {:?} - {:?} - {:?}", mtype, ctype, interval);
         std::thread::spawn(move || loop {
-            info!("Click... {:?} - {:?} - {:?}", mtype, ctype, interval);
             for n in 1..3 {
                 if ctype == "single" && n == 2 { break; };
-
-                #[cfg(target_os = "windows")] {
-                    crate::inputs::winput::send(match mtype.as_str() {
-                        "left" => crate::inputs::Button::Left,
-                        "middle" => crate::inputs::Button::Middle,
-                        "right" => crate::inputs::Button::Right,
-                        _ => crate::inputs::Button::Left
-                    });
-                }
-
-                #[cfg(target_os = "macos")] {
-                    crate::inputs::minput::send(match mtype.as_str() {
-                        "left" => crate::inputs::Button::Left,
-                        "middle" => crate::inputs::Button::Middle,
-                        "right" => crate::inputs::Button::Right,
-                        _ => crate::inputs::Button::Left
-                    });
-                }
+                send_click(mtype.clone());
             }
 
             std::thread::sleep(interval);
@@ -190,6 +174,26 @@ fn app_toggle(
 
     info!("State: {}", *status);
     return *status;
+}
+
+fn send_click(mtype: String) {
+    #[cfg(target_os = "windows")] {
+        crate::inputs::winput::send(match mtype.as_str() {
+            "left" => crate::inputs::Button::Left,
+            "middle" => crate::inputs::Button::Middle,
+            "right" => crate::inputs::Button::Right,
+            _ => crate::inputs::Button::Left
+        });
+    }
+
+    #[cfg(target_os = "macos")] {
+        crate::inputs::minput::send(match mtype.as_str() {
+            "left" => crate::inputs::Button::Left,
+            "middle" => crate::inputs::Button::Middle,
+            "right" => crate::inputs::Button::Right,
+            _ => crate::inputs::Button::Left
+        });
+    }
 }
 
 fn main() {
@@ -248,28 +252,12 @@ fn main() {
                                 let interval = std::time::Duration::from_millis(*interval);
                                 let mtype = mouse_button.clone().to_owned();
                                 let ctype = click_type.clone().to_owned();
+
+                                info!("Spawning Click Thread... {:?} - {:?} - {:?}", mtype, ctype, interval);
                                 std::thread::spawn(move || loop {
-                                    info!("Click... {:?} - {:?}", mtype, ctype);
                                     for n in 1..3 {
                                         if ctype == "single" && n == 2 { break; };
-
-                                        #[cfg(target_os = "windows")] {
-                                            crate::inputs::winput::send(match mtype.as_str() {
-                                                "left" => crate::inputs::Button::Left,
-                                                "middle" => crate::inputs::Button::Middle,
-                                                "right" => crate::inputs::Button::Right,
-                                                _ => crate::inputs::Button::Left
-                                            });
-                                        }
-
-                                        #[cfg(target_os = "macos")] {
-                                            crate::inputs::minput::send(match mtype.as_str() {
-                                                "left" => crate::inputs::Button::Left,
-                                                "middle" => crate::inputs::Button::Middle,
-                                                "right" => crate::inputs::Button::Right,
-                                                _ => crate::inputs::Button::Left
-                                            });
-                                        }
+                                        send_click(mtype.clone());
                                     }
 
                                     std::thread::sleep(interval);
@@ -318,7 +306,6 @@ fn main() {
 
             app.emit("single-instance", Payload { args: argv, cwd }).unwrap();
         }))
-        // .plugin(tauri_plugin_aptabase::Builder::new("aptabase_key").build())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(AppState::new())
         .invoke_handler(tauri::generate_handler![
