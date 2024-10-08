@@ -1,6 +1,7 @@
 use core_graphics::{
     event::{ CGEvent, CGEventType, CGEventTapLocation, CGMouseButton },
-    event_source::{ CGEventSource, CGEventSourceStateID }
+    event_source::{ CGEventSource, CGEventSourceStateID },
+    geometry::CGPoint
 };
 
 use crate::inputs::{Action, Button};
@@ -25,35 +26,18 @@ impl Keylike for Button {
             Button::Middle => CGMouseButton::Center
         };
 
-        if action == Action::Press {
-            let point = get_mouse_position();
-            let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState);
-            CGEvent::new_mouse_event(source, event_type, point, button)
-        } else {    
-            let position  = match get_mouse_position() {
-                Mouse::Position { x, y } => Position { x, y },
-                Mouse::Error => Position { x: 0, y: 0 }
-            };
-
-            let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState);
-            CGEvent::new_mouse_event(source, event_type, position, button);
-        }
+        let point = get_mouse_position().expect("Failed to get mouse position.");
+        let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState);
+        CGEvent::new_mouse_event(source, event_type, point, button).expect("Failed to create mouse event.");
     }
 }
 
-pub struct Position { pub x: i32, pub y: i32 }
-pub enum Mouse { Position { x: i32, y: i32 }, Error }
-fn get_mouse_position() -> Mouse {
-    let event = CGEvent::new(CGEventSource::new(CGEventSourceStateID::CombinedSessionState).unwrap());
-    let point = match event {
-        Ok(event) => {
-            let point = event.location();
-            Mouse::Position { x: point.x as i32, y: point.y as i32 }
-        },
-        Err(_) => return Mouse::Error,
-    };
+fn get_mouse_position() -> Option<CGPoint> {
+    let source = CGEventSource::new(CGEventSourceStateID::CombinedSessionState).ok()?;
+    let event = CGEvent::new(source).ok()?;
+    let point = event.location();
 
-    point
+    Some(CGPoint::new(point.x, point.y))
 }
 
 #[inline(always)]
