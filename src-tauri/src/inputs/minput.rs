@@ -27,8 +27,10 @@ impl Keylike for Button {
         };
 
         let point = get_mouse_position().expect("Failed to get mouse position.");
-        let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState);
-        CGEvent::new_mouse_event(source, event_type, point, button).expect("Failed to create mouse event.");
+        let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState).expect("Failed to create event source.");
+        let event = CGEvent::new_mouse_event(source, event_type, point, button).expect("Failed to create mouse event.");
+
+        event;
     }
 }
 
