@@ -4,7 +4,7 @@ on:
 env:
   ARCH: x86_64
   DEPENDENCIES_ARCH: "'libappindicator-gtk3' 'webkit2gtk' 'gtk3' 'xdotool'"
-  DEPENDENCIES_RPM: "javascriptcoregtk4.0, webkit2gtk4.0, libxdo, libappindicator-gtk3, xdotool"
+  DEPENDENCIES_RPM: "javascriptcoregtk-4.1, webkit2gtk4.0, libxdo, libappindicator-gtk3, xdotool, libsoup-3.0"
 jobs:
   setup:
     runs-on: ubuntu-latest
