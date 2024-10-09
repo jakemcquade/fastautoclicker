@@ -43,11 +43,9 @@ fn get_mouse_position() -> Option<CGPoint> {
 }
 
 #[inline(always)]
-pub fn send<K: Keylike>(key: K) -> Result<(), ()> {
+pub fn send<K: Keylike>(key: K) {
     let press_event = key.produce_input(Action::Press);
     let release_event = key.produce_input(Action::Release);
     press_event.post(CGEventTapLocation::HID);
     release_event.post(CGEventTapLocation::HID);
-    
-    Ok(())
 }
