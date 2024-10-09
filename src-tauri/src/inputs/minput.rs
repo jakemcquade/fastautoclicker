@@ -30,7 +30,7 @@ impl Keylike for Button {
         let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState).expect("Failed to create event source.");
         let event = CGEvent::new_mouse_event(source, event_type, point, button).expect("Failed to create mouse event.");
 
-        event;
+        event
     }
 }
 
@@ -46,8 +46,6 @@ fn get_mouse_position() -> Option<CGPoint> {
 pub fn send<K: Keylike>(key: K) -> Result<(), ()> {
     let press_event = key.produce_input(Action::Press);
     let release_event = key.produce_input(Action::Release);
-    let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState)?;
-
     press_event.post(CGEventTapLocation::HID);
     release_event.post(CGEventTapLocation::HID);
     
