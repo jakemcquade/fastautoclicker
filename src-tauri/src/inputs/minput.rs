@@ -43,9 +43,9 @@ fn get_mouse_position() -> Option<CGPoint> {
 }
 
 #[inline(always)]
-pub fn send<K: Keylike>(key: K) -> Result<(), std::io::Error> {
-    let press_event = key.produce_input(Action::Press)?;
-    let release_event = key.produce_input(Action::Release)?;
+pub fn send<K: Keylike>(key: K) -> Result<(), ()> {
+    let press_event = key.produce_input(Action::Press);
+    let release_event = key.produce_input(Action::Release);
     let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState)?;
 
     press_event.post(CGEventTapLocation::HID);
