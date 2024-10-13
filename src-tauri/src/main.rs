@@ -2,21 +2,15 @@
 
 mod storage;
 mod inputs;
+mod util;
 
-use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut};
-use tauri::{Emitter, Manager};
-use std::sync::{Arc, Mutex};
-use log::{error, info};
+use tauri_plugin_global_shortcut::GlobalShortcutExt;
+use tauri::{ Emitter, Manager };
+use std::sync::{ Arc, Mutex };
 use std::str::FromStr;
 use std::sync::mpsc;
 
 static STORAGE: Mutex<String> = Mutex::new(String::new());
-
-#[derive(Clone, serde::Serialize)]
-struct Payload {
-    args: Vec<String>,
-    cwd: String,
-}
 
 pub struct AppState {
     status: Arc<Mutex<bool>>,
@@ -35,27 +29,20 @@ impl AppState {
             stop_interval: Arc::new(Mutex::new(None)),
             mouse_button: Arc::new(Mutex::new("left".to_string())),
             click_type: Arc::new(Mutex::new("single".to_string())),
-            hotkey: Arc::new(Mutex::new("shift+q".to_string())),
+            hotkey: Arc::new(Mutex::new("shift+tab".to_string())),
         }
     }
 }
 
-#[derive(serde::Serialize, serde::Deserialize, Debug)]
-enum Value {
-    String(String),
-    Bool(bool),
-    U64(u64),
-}
-
 #[tauri::command]
-fn get_state(state: tauri::State<AppState>, name: String) -> Value {
-    info!("GET state: {:?}", name);
+fn get_state(state: tauri::State<AppState>, name: String) -> util::Value {
+    log::info!("GET state: {:?}", name);
     match name.as_str() {
-        "status" => Value::Bool(*state.status.lock().unwrap()),
-        "interval" => Value::U64(*state.interval.lock().unwrap()),
-        "mouse_button" => Value::String(state.mouse_button.lock().unwrap().clone()),
-        "click_type" => Value::String(state.click_type.lock().unwrap().clone()),
-        "hotkey" => Value::String(state.hotkey.lock().unwrap().clone()),
+        "status" => util::Value::Bool(*state.status.lock().unwrap()),
+        "interval" => util::Value::U64(*state.interval.lock().unwrap()),
+        "mouse_button" => util::Value::String(state.mouse_button.lock().unwrap().clone()),
+        "click_type" => util::Value::String(state.click_type.lock().unwrap().clone()),
+        "hotkey" => util::Value::String(state.hotkey.lock().unwrap().clone()),
         _ => panic!("Invalid statetype \"{:?}\".", name),
     }
 }
@@ -65,57 +52,40 @@ fn set_state(
     app: tauri::AppHandle,
     state: tauri::State<AppState>,
     name: String,
-    value: Value,
+    value: util::Value,
 ) -> bool {
-    info!("Set state: {:?} = {:?}", name, value);
+    log::info!("Set state: {:?} = {:?}", name, value);
     match name.as_str() {
         "status" => match value {
-            Value::Bool(val) => {
-                let mut status = state.status.lock().unwrap();
-                *status = val;
-
-                return true;
-            }
+            util::Value::Bool(val) => util::update_state(&state.status, val),
             _ => panic!("Invalid value type."),
         },
         "interval" => match value {
-            Value::U64(val) => {
-                let mut data = state.interval.lock().unwrap();
-                *data = val;
-
-                return true;
-            }
+            util::Value::U64(val) => util::update_state(&state.interval, val),
             _ => panic!("Invalid value type."),
         },
         "mouse_button" => match value {
-            Value::String(val) => {
-                let mut data = state.mouse_button.lock().unwrap();
-                *data = val;
-
-                return true;
-            }
+            util::Value::String(val) => util::update_state(&state.mouse_button, val.clone()),
             _ => panic!("Invalid value type."),
         },
         "click_type" => match value {
-            Value::String(val) => {
-                let mut data = state.click_type.lock().unwrap();
-                *data = val;
-
-                return true;
-            }
-            _ => panic!("Invalid value type."),
+            util::Value::String(val) => util::update_state(&state.click_type, val.clone()),
+            _ => panic!("Invalid value type.")
         },
         "hotkey" => match value {
-            Value::String(val) => {
-                let mut data = state.hotkey.lock().unwrap();
-                *data = val.clone();
+            util::Value::String(val) => {
+                if !util::is_valid_hotkey(&val) {
+                    panic!("Invalid hotkey: must start with a modifier key.");
+                }
 
-                let shortcut = Shortcut::from_str(&val).unwrap();
+                util::update_state(&state.hotkey, val.clone());
+
+                let shortcut = tauri_plugin_global_shortcut::Shortcut::from_str(&val).unwrap();
                 app.global_shortcut().unregister_all().unwrap();
                 app.global_shortcut().register(shortcut).unwrap();
-
+    
                 let _ = app.emit("hotkey", val).unwrap();
-                return true;
+                true
             }
             _ => panic!("Invalid value type."),
         },
@@ -146,11 +116,11 @@ fn app_toggle(
         let mtype = mouse_button.clone().to_owned();
         let ctype = click_type.clone().to_owned();
         
-        info!("Spawning Click Thread... {:?} - {:?} - {:?}", mtype, ctype, interval);
+        log::info!("Spawning Click Thread... {:?} - {:?} - {:?}", mtype, ctype, interval);
         std::thread::spawn(move || loop {
             for n in 1..3 {
                 if ctype == "single" && n == 2 { break; };
-                send_click(mtype.clone());
+                util::send_click(mtype.clone());
             }
 
             std::thread::sleep(interval);
@@ -166,34 +136,14 @@ fn app_toggle(
     } else {
         if let Some(tx) = stop_interval.take() {
             if let Err(e) = tx.send(()) {
-                error!("Failed to send stop signal: {:?}", e.to_string());
+                log::error!("Failed to send stop signal: {:?}", e.to_string());
                 std::process::exit(1);
             }
         }
     }
 
-    info!("State: {}", if *status { "Enabled" } else { "Disabled" });
-    return *status;
-}
-
-fn send_click(mtype: String) {
-    #[cfg(target_os = "windows")] {
-        crate::inputs::winput::send(match mtype.as_str() {
-            "left" => crate::inputs::Button::Left,
-            "middle" => crate::inputs::Button::Middle,
-            "right" => crate::inputs::Button::Right,
-            _ => crate::inputs::Button::Left
-        });
-    }
-
-    #[cfg(target_os = "macos")] {
-        crate::inputs::minput::send(match mtype.as_str() {
-            "left" => crate::inputs::Button::Left,
-            "middle" => crate::inputs::Button::Middle,
-            "right" => crate::inputs::Button::Right,
-            _ => crate::inputs::Button::Left
-        });
-    }
+    log::info!("State: {}", if *status { "Enabled" } else { "Disabled" });
+    *status
 }
 
 fn main() {
@@ -202,7 +152,7 @@ fn main() {
             *STORAGE.lock().unwrap() = app
                 .path()
                 .app_config_dir()
-                .unwrap_or(std::path::PathBuf::new())
+                .unwrap_or_else(| _ | std::path::PathBuf::new())
                 .to_string_lossy()
                 .to_string();
 
@@ -220,15 +170,10 @@ fn main() {
                     let json: ConfigStruct =
                         serde_json::from_str(contents_str).expect("Malformed JSON.");
                     let state = app.state::<AppState>();
-
-                    let mut mouse_button = state.mouse_button.lock().unwrap();
-                    *mouse_button = json.mouse_button;
-
-                    let mut click_type = state.click_type.lock().unwrap();
-                    *click_type = json.click_type;
-
-                    let mut hotkey = state.hotkey.lock().unwrap();
-                    *hotkey = json.hotkey;
+                    
+                    if util::is_valid_hotkey(&json.hotkey) { util::update_state(&state.hotkey, json.hotkey); }
+                    util::update_state(&state.mouse_button, json.mouse_button);
+                    util::update_state(&state.click_type, json.click_type);
                 }
                 Err(_) => {}
             };
@@ -237,27 +182,24 @@ fn main() {
                 tauri_plugin_global_shortcut::Builder::new()
                     .with_shortcuts([app.state::<AppState>().hotkey.lock().unwrap().as_str()])?
                     .with_handler(|app, shortcut, event| {
-                        info!("Global Shortcut: {:?} - {:?}", shortcut, event);
+                        log::info!("Global Shortcut: {:?} - {:?}", shortcut, event);
                         if event.state == tauri_plugin_global_shortcut::ShortcutState::Pressed {
                             let state = app.state::<AppState>();
                             let mut status = state.status.lock().unwrap();
                             let mut stop_interval = state.stop_interval.lock().unwrap();
-                            let interval = state.interval.lock().unwrap();
-                            let mouse_button = state.mouse_button.lock().unwrap();
-                            let click_type = state.click_type.lock().unwrap();
                             *status = !*status;
 
                             if *status {
                                 let (tx, rx) = mpsc::channel();
-                                let interval = std::time::Duration::from_millis(*interval);
-                                let mtype = mouse_button.clone().to_owned();
-                                let ctype = click_type.clone().to_owned();
+                                let interval = std::time::Duration::from_millis(*state.interval.lock().unwrap());
+                                let mtype = state.mouse_button.lock().unwrap().clone().to_owned();
+                                let ctype = state.click_type.lock().unwrap().clone().to_owned();
 
-                                info!("Spawning Click Thread... {:?} - {:?} - {:?}", mtype, ctype, interval);
+                                log::info!("Spawning Click Thread... {:?} - {:?} - {:?}", mtype, ctype, interval);
                                 std::thread::spawn(move || loop {
                                     for n in 1..3 {
                                         if ctype == "single" && n == 2 { break; };
-                                        send_click(mtype.clone());
+                                        util::send_click(mtype.clone());
                                     }
 
                                     std::thread::sleep(interval);
@@ -272,16 +214,16 @@ fn main() {
                                 *stop_interval = Some(tx);
                             } else {
                                 if let Some(tx) = stop_interval.take() {
-                                    info!("Stopping click loop...");
+                                    log::info!("Stopping click loop...");
                                     if let Err(e) = tx.send(()) {
-                                        error!("Failed to send stop signal: {:?}", e.to_string());
+                                        log::error!("Failed to send stop signal: {:?}", e.to_string());
                                         std::process::exit(1);
                                     }
                                 }
                             }
 
                             app.emit("state", *status).unwrap();
-                            info!("State: {}", if *status { "Enabled" } else { "Disabled" });
+                            log::info!("State: {}", if *status { "Enabled" } else { "Disabled" });
                         }
                     })
                     .build(),
@@ -303,7 +245,7 @@ fn main() {
             let window = app.get_webview_window("main").unwrap();
             if !window.is_visible().unwrap() { window.show().unwrap(); };
 
-            app.emit("single-instance", Payload { args: argv, cwd }).unwrap();
+            app.emit("single-instance", util::Payload { args: argv, cwd }).unwrap();
         }))
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(AppState::new())
