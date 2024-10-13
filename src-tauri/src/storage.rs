@@ -36,7 +36,7 @@ pub fn init() -> Result<(), std::io::Error> {
     create_dir_if_not_exists(&config_dir);
 
     let default_settings = r#"{
-        "hotkey": "Shift+Q",
+        "hotkey": "Shift+Tab",
         "mouse_button": "left",
         "click_type": "single"
     }"#;
