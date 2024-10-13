@@ -2,7 +2,7 @@
   "name": "fastautoclicker",
   "description": "An open sourced, lightweight, and fast auto clicker designed with a sleek modern interface.",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "FastAutoClicker"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "chrono",
  "core-graphics 0.19.2",

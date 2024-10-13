@@ -1,6 +1,6 @@
 [package]
 name = "FastAutoClicker"
-version = "1.0.0"
+version = "1.0.1"
 description = "An open sourced, lightweight, and fast auto clicker designed with a sleek modern interface."
 authors = ["jakemcquade"]
 edition = "2021"
