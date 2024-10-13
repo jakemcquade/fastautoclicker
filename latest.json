@@ -1,19 +1,19 @@
 {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "notes": "Checkout the latest update.",
-    "pub_date": "2024-10-09T13:09:15.929Z",
+    "pub_date": "2024-10-13T03:10:58.156Z",
     "platforms": {
-        "darwin-aarch64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUcmlubnRQVWNLeVB1UTNaeWdoMjVOdGw4b005MUJ2Ulcvb2RxeDdOK2Q3UjNBMHBGaUxjQmVlaUcrOE9IVFoxZWswT3VDT2MzMWRXZCtacGxZRXYvY3NkL3RUSWM3NFFvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzI4NDc5MDkxCWZpbGU6RmFzdEF1dG9DbGlja2VyLmFwcC50YXIuZ3oKME9yUE5IZHczYk9acm1mTmNLQ3FRbXp0WUczWkd4NkFWUHRCNldTY3JBcU12cktTY3RDbmxJdEhTS2hzaTdJanpNS3dqczNYU0JVOEVEVy82R2FhQWc9PQo=",
-            "url": "https://github.com/jakemcquade/fastautoclicker/releases/download/v1.0.0/FastAutoClicker_aarch64.app.tar.gz"
-        },
-        "darwin-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUcmlubnRQVWNLeUp3ZmJmZStHYTliNzY1YndxVUw4ZFg0WitJaFRIMUJKczhVUUFJNmxaUHFQZ0t3YTA3Nno2a05MYklaazVaVkJQaGYzZTJ5ZU9CZWFocXhnUlFSdFFrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzI4NDc5MDk3CWZpbGU6RmFzdEF1dG9DbGlja2VyLmFwcC50YXIuZ3oKczNBMy9vM3dpb09qdHJOdjdRd1NqSGt0VVBLT3dPUGl5UEo3dmFQSThVVlc5WVZXYnBrWUpIQmQrUnoyOU9URGJwZzllSEFKQUxDQmRHREhOQUg2RGc9PQo=",
-            "url": "https://github.com/jakemcquade/fastautoclicker/releases/download/v1.0.0/FastAutoClicker_x64.app.tar.gz"
-        },
-        "windows-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUcmlubnRQVWNLeUphRG04c0ZMUVJGZHRRcGF5MDBYR0E2eGcrVzhlTDNFVDlFd2g4QkdGdW4xQmpBZkRNdUVETzVPRUxObmlUcWxnL2VRbFErNHc3Smx2RWwrYmtjTHdrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzI4NDc5MzU0CWZpbGU6RmFzdEF1dG9DbGlja2VyXzEuMC4wX3g2NF9lbi1VUy5tc2kKcklWYVRDdyt4OGZ2ZkREMEthYnQ3OUZ1V1BkMkhXUnRDZUZwbEF2amRObzFDSERPb0M5by9ZRlFiOEpDVXVvM2p2UWpXN2xlcXRmaDJFcXpnc0NFRFE9PQo=",
-            "url": "https://github.com/jakemcquade/fastautoclicker/releases/download/v1.0.0/FastAutoClicker_1.0.0_x64_en-US.msi"
-        }
+      "darwin-aarch64": {
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUcmlubnRQVWNLeUcxcVgxU0IyelRCZGF3dkRVYXhQNC8xY3ZUbDYyVUxWd1JmTEpJMFl4T2l5NkhsNjR0bFZubHBVaXk5SlVUeGx3WCtuZGVPaG4vaytiQy9lRkVRaWdVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzI4Nzg4Njk2CWZpbGU6RmFzdEF1dG9DbGlja2VyLmFwcC50YXIuZ3oKV2pOUk1VRkNWeUZCOVhBTUdTcDA0R25oWmtuZ2pxb1NvZDErZE80NmJGMGJleWNkaGwxK2RkWEM3S1dvTDc3RXluYjU1TythYUVLaXNGakRteDd6Qnc9PQo=",
+        "url": "https://github.com/jakemcquade/fastautoclicker/releases/download/v1.0.1/FastAutoClicker_aarch64.app.tar.gz"
+      },
+      "darwin-x86_64": {
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUcmlubnRQVWNLeUkvN3p4Tzc3ek40U1l1UEtPck9Wb2owKzlUSDN1cUFGTGFMS1JGS2FWVFBZV2dGaGhGU2x2dktqMTZCdFQ2MFRDRDc4cGRVNlR6a0I5bVhOYlg3NFE4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzI4Nzg4NzAzCWZpbGU6RmFzdEF1dG9DbGlja2VyLmFwcC50YXIuZ3oKd0lIdVdQbVdzbHFuQUtaUGdFWnNwekNwVENxcW1PZVVQTExlakgyOTBYNVVKZmlLSkhLeldGeFR3RlQwZGwvbHM0UGpXSWViTjZoSGNrOTJscjZGRHc9PQo=",
+        "url": "https://github.com/jakemcquade/fastautoclicker/releases/download/v1.0.1/FastAutoClicker_x64.app.tar.gz"
+      },
+      "windows-x86_64": {
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUcmlubnRQVWNLeUQ5Q1pMNEhiYUVZcktOY1E3N2YrZlE0S1E1cEJuNmRTOTMxQU5DWHBaRDIwNGRFclo3Y055ZXpBQ2M1R1l0KzhDd0w1Q3lKVFFwbElCTURUUW9KOVFrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzI4Nzg5MDU2CWZpbGU6RmFzdEF1dG9DbGlja2VyXzEuMC4xX3g2NF9lbi1VUy5tc2kKQ2NxQS9mYk5oTnluekY0bis3bUJLZlovT3NjbldXUnk5VHd4T2xiTXBUaXc2eTQxU1ZwMlhVYWphSWViOFdrK0RMaGxjb0FwdXQrMTg2VWZqNWovREE9PQo=",
+        "url": "https://github.com/jakemcquade/fastautoclicker/releases/download/v1.0.1/FastAutoClicker_1.0.1_x64_en-US.msi"
+      }
     }
-}
+  }
