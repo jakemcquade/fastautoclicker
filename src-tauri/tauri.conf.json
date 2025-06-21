@@ -1,7 +1,8 @@
 {
+  "$schema": "https://schema.tauri.app/config/2.0.0",
   "productName": "FastAutoClicker",
-  "version": "1.0.1",
-  "identifier": ".fastautoclicker",
+  "identifier": ".jakemcquade.fastautoclicker",
+  "version": "1.0.2",
   "build": {
     "beforeDevCommand": "yarn dev",
     "beforeBuildCommand": "yarn build",
@@ -65,14 +66,13 @@
         "title": "FastAutoClicker",
         "width": 440,
         "height": 400,
+        "shadow": true,
+        "url": "index.html",
         "alwaysOnTop": true,
         "resizable": false,
         "fullscreen": false,
         "maximizable": false,
-        "decorations": false,
-        "transparent": true,
-        "shadow": true,
-        "url": "index.html"
+        "decorations": false
       }
     ]
   }
