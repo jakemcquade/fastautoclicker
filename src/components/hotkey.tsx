@@ -59,8 +59,8 @@ export function HotkeyPopup({ hotkey, open, onClose, onSave }: HotkeyPopupProps)
         if (watchingInput) setError(null);
     }, [watchingInput]);
 
-    return (
-        <>
+    return (<>
+        {open && (<>
             {/* Blur overlay */}
             <div
                 className={`fixed inset-0 z-50 bg-black/80 transition-opacity duration-300 ${open ? "opacity-100 animate-fadeIn" : "opacity-0 pointer-events-none animate-fadeOut"
@@ -109,6 +109,7 @@ export function HotkeyPopup({ hotkey, open, onClose, onSave }: HotkeyPopupProps)
                                 type="button"
                                 className="px-4 py-2 h-[44px] w-full rounded bg-green-600 hover:bg-green-700 transition"
                                 disabled={watchingInput}
+                                aria-disabled={watchingInput}
                                 onClick={() => {
                                     if (!recordedInput.length) {
                                         setError("Please record a hotkey first.");
@@ -119,9 +120,7 @@ export function HotkeyPopup({ hotkey, open, onClose, onSave }: HotkeyPopupProps)
                                     setRecordedInput([]);
                                     setWatching(false);
                                     setError(null);
-                                }}
-                                aria-disabled={watchingInput}
-                            >
+                                }}>
                                 Save
                             </button>
                             <button
@@ -155,15 +154,16 @@ export function HotkeyPopup({ hotkey, open, onClose, onSave }: HotkeyPopupProps)
                     </div>
                 </div>
             </div>
-            {/* Animations */}
-            <style>
-                {`
+        </>)}
+        {/* Animations */}
+        <style>
+            {`
                 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
                 @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
                 .animate-fadeIn { animation: fadeIn 0.2s ease-in-out; }
                 .animate-fadeOut { animation: fadeOut 0.2s ease-in-out; }
                 `}
-            </style>
-        </>
+        </style>
+    </>
     );
 }
