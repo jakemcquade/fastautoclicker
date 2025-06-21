@@ -13,7 +13,6 @@ dist-ssr
 src-tauri/target
 build.ps1
 old
-yarn.lock
 *.local
 
 # Editor directories and files
