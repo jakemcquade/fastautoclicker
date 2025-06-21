@@ -1,0 +1,134 @@
+/*!
+ * Jake McQuade (jakemc.dev)
+ * Tailwind included. All rights go to their respective owners.
+ */
+
+@import "tailwindcss";
+
+@config "../../tailwind.config.js";
+
+@layer base {
+  *, ::after, ::before, ::backdrop, ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+
+  :root {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', Avenir, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+
+    color: #0f0f0f;
+    background-color: #f6f6f6;
+
+    --secondary: 220, 220, 220;
+    --tertiary: 189, 189, 189;
+  }
+
+  a {
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
+    text-decoration: none;
+  }
+
+  body {
+    @apply text-foreground;
+    background-color: #e8e8e8;
+    color: #0f0f0f;
+    overflow: hidden;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+
+  input,
+  button,
+  select,
+  button[type="button"] {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.4em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #ffffff;
+    transition: border-color 0.25s;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+    outline: none;
+  }
+
+  input {
+    height: 100%;
+    width: 100%;
+    max-width: 200px;
+    border-radius: 6px;
+  }
+
+  select,
+  button[type="button"] {
+    outline: none;
+    border: none;
+  }
+
+  button,
+  select {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input,
+  button {
+    outline: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color: #f6f6f6;
+      background-color: #2f2f2f;
+      --secondary: 43, 43, 43;
+      --tertiary: 28, 28, 28;
+    }
+
+    html,
+    body {
+      background-color: #202020;
+      color: #f6f6f6;
+    }
+
+    a:hover {
+      color: #24c8db;
+    }
+
+    input,
+    button,
+    button[type="button"] {
+      color: #ffffff;
+      background-color: #0f0f0f98;
+    }
+
+    button:active,
+    button[type="button"]:active {
+      background-color: #0f0f0f69;
+    }
+  }
+}
