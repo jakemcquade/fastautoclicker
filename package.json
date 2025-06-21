@@ -2,7 +2,7 @@
   "name": "fastautoclicker",
   "description": "An open sourced, lightweight, and fast auto clicker designed with a sleek modern interface.",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,18 +12,20 @@
     "build": "tsc && vite build"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2.0.2",
-    "@tauri-apps/plugin-process": "^2.0.0",
-    "@tauri-apps/plugin-updater": "^2.0.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "@tailwindcss/postcss": "^4.1.10",
+    "@tauri-apps/api": "^2.5.0",
+    "@tauri-apps/plugin-process": "^2.2.2",
+    "@tauri-apps/plugin-updater": "^2.8.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.10"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.0.3",
-    "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.1",
-    "@vitejs/plugin-react": "^4.3.2",
-    "typescript": "^5.6.3",
-    "vite": "^5.4.8"
+    "@tauri-apps/cli": "^2.5.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.5.2",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
   }
 }
