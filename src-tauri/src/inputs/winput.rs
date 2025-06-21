@@ -1,7 +1,7 @@
 use winapi::um::winuser;
 use std::marker::Copy;
 
-use crate::inputs::{ Action, Button };
+use crate::inputs::{ Action, MouseButton };
 // impl Action {
 //     pub fn from_bool(is_press: bool) -> Self {
 //         if is_press { Self::Press }
@@ -13,15 +13,17 @@ use crate::inputs::{ Action, Button };
 #[repr(transparent)]
 pub struct Input(winuser::INPUT);
 impl Input {
-    pub fn from_button(button: Button) -> Input {
+    pub fn from_button(button: MouseButton) -> Input {
         let mut input: winuser::INPUT = unsafe { std::mem::zeroed() };
         input.type_ = winuser::INPUT_MOUSE;
+
         let mi = unsafe { input.u.mi_mut() };
         mi.dwFlags = match button {
-            Button::Left => winuser::MOUSEEVENTF_LEFTDOWN | winuser::MOUSEEVENTF_LEFTUP,
-            Button::Right => winuser::MOUSEEVENTF_RIGHTDOWN | winuser::MOUSEEVENTF_RIGHTUP,
-            Button::Middle => winuser::MOUSEEVENTF_MIDDLEDOWN | winuser::MOUSEEVENTF_MIDDLEUP,
+            MouseButton::Left => winuser::MOUSEEVENTF_LEFTDOWN | winuser::MOUSEEVENTF_LEFTUP,
+            MouseButton::Right => winuser::MOUSEEVENTF_RIGHTDOWN | winuser::MOUSEEVENTF_RIGHTUP,
+            MouseButton::Middle => winuser::MOUSEEVENTF_MIDDLEDOWN | winuser::MOUSEEVENTF_MIDDLEUP,
         };
+
         Input(input)
     }
 }
@@ -30,7 +32,7 @@ pub trait Keylike: Copy {
     fn produce_input(self, action: Action) -> Input;
 }
 
-impl Keylike for Button {
+impl Keylike for MouseButton {
     fn produce_input(self, _action: Action) -> Input {
         Input::from_button(self)
     }

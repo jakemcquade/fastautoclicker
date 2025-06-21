@@ -4,26 +4,26 @@ use core_graphics::{
     geometry::CGPoint
 };
 
-use crate::inputs::{Action, Button};
+use crate::inputs::{ Action, MouseButton };
 pub trait Keylike: Copy {
     fn produce_input(self, action: Action) -> CGEvent;
 }
 
-impl Keylike for Button {
+impl Keylike for MouseButton {
     fn produce_input(self, action: Action) -> CGEvent {
         let event_type = match (self, action) {
-            (Button::Left, Action::Press) => CGEventType::LeftMouseDown,
-            (Button::Left, Action::Release) => CGEventType::LeftMouseUp,
-            (Button::Right, Action::Press) => CGEventType::RightMouseDown,
-            (Button::Right, Action::Release) => CGEventType::RightMouseUp,
-            (Button::Middle, Action::Press) => CGEventType::OtherMouseDown,
-            (Button::Middle, Action::Release) => CGEventType::OtherMouseUp
+            (MouseButton::Left, Action::Press) => CGEventType::LeftMouseDown,
+            (MouseButton::Left, Action::Release) => CGEventType::LeftMouseUp,
+            (MouseButton::Right, Action::Press) => CGEventType::RightMouseDown,
+            (MouseButton::Right, Action::Release) => CGEventType::RightMouseUp,
+            (MouseButton::Middle, Action::Press) => CGEventType::OtherMouseDown,
+            (MouseButton::Middle, Action::Release) => CGEventType::OtherMouseUp
         };
 
         let button = match self {
-            Button::Left => CGMouseButton::Left,
-            Button::Right => CGMouseButton::Right,
-            Button::Middle => CGMouseButton::Center
+            MouseButton::Left => CGMouseButton::Left,
+            MouseButton::Right => CGMouseButton::Right,
+            MouseButton::Middle => CGMouseButton::Center
         };
 
         let point = get_mouse_position().expect("Failed to get mouse position.");

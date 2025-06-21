@@ -5,6 +5,13 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 
+#[derive(serde::Deserialize)]
+pub struct ConfigStruct {
+    pub mouse_button: u8,
+    pub click_type: u8,
+    pub hotkey: String
+}
+
 #[tauri::command]
 pub fn get_settings() -> Result<String, ()> {
     let config_dir = STORAGE.lock().unwrap();
@@ -37,8 +44,8 @@ pub fn init() -> Result<(), std::io::Error> {
 
     let default_settings = r#"{
         "hotkey": "Shift+Tab",
-        "mouse_button": "left",
-        "click_type": "single"
+        "mouse_button": 0,
+        "click_type": 0
     }"#;
 
     let settings = &format!("{}/settings.json", &config_dir);
