@@ -23,21 +23,28 @@ pub fn update_state<T>(lock: &Mutex<T>, value: T) -> bool {
 }
 
 pub fn is_valid_hotkey(hotkey: &str) -> bool {
-    let modifiers = ["Control", "Alt", "Shift", "Cmd"];
-    let parts: Vec<&str> = hotkey.split('+').collect();
-    if parts.is_empty() { return false; }
-
-    modifiers.contains(&parts[0])
+    !hotkey.trim().is_empty()
 }
 
-pub fn send_click(mtype: MouseButton) {
+pub fn send_click(mtype: MouseButton, position: Option<(i32, i32)>) {
     #[cfg(target_os = "windows")]
     {
+        if let Some((x, y)) = position {
+            crate::inputs::winput::set_position(x, y);
+        }
+
         crate::inputs::winput::send(mtype);
     }
 
     #[cfg(target_os = "macos")]
     {
         crate::inputs::minput::send(mtype);
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        if let Err(err) = crate::inputs::linput::send(mtype, position) {
+            log::warn!("Linux input failed: {}", err);
+        }
     }
 }

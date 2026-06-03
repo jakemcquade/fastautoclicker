@@ -6,10 +6,23 @@ use std::io::Write;
 use std::path::Path;
 
 #[derive(serde::Deserialize)]
+#[serde(default)]
 pub struct ConfigStruct {
     pub mouse_button: u8,
     pub click_type: u8,
-    pub hotkey: String
+    pub hotkey: String,
+    pub interval: u64
+}
+
+impl Default for ConfigStruct {
+    fn default() -> Self {
+        Self {
+            hotkey: "F6".to_string(),
+            mouse_button: 0,
+            click_type: 0,
+            interval: 100
+        }
+    }
 }
 
 #[tauri::command]
@@ -43,9 +56,10 @@ pub fn init() -> Result<(), std::io::Error> {
     create_dir_if_not_exists(&config_dir);
 
     let default_settings = r#"{
-        "hotkey": "Shift+Tab",
+        "hotkey": "F6",
         "mouse_button": 0,
-        "click_type": 0
+        "click_type": 0,
+        "interval": 100
     }"#;
 
     let settings = &format!("{}/settings.json", &config_dir);
@@ -66,15 +80,21 @@ pub fn init() -> Result<(), std::io::Error> {
                 if let Value::Object(ref mut obj) = config {
                     obj.insert(key.to_string(), value.into());
                 }
-
-                fs::write(&default_settings, config.to_string())?;
             } else if let Some(value) = expected_config[key].as_bool() {
                 if let Value::Object(ref mut obj) = config {
                     obj.insert(key.to_string(), value.into());
                 }
-
-                fs::write(&default_settings, config.to_string())?;
+            } else if let Some(value) = expected_config[key].as_u64() {
+                if let Value::Object(ref mut obj) = config {
+                    obj.insert(key.to_string(), Value::from(value));
+                }
+            } else if let Some(value) = expected_config[key].as_i64() {
+                if let Value::Object(ref mut obj) = config {
+                    obj.insert(key.to_string(), Value::from(value));
+                }
             }
+
+            fs::write(&settings, config.to_string())?;
         }
     }
 
