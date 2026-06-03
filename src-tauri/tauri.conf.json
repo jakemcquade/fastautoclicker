@@ -64,15 +64,15 @@
       {
         "label": "main",
         "title": "FastAutoClicker",
-        "width": 440,
-        "height": 400,
+        "width": 500,
+        "height": 450,
         "shadow": true,
         "url": "index.html",
         "alwaysOnTop": true,
         "resizable": false,
         "fullscreen": false,
         "maximizable": false,
-        "decorations": false
+        "decorations": true
       }
     ]
   }

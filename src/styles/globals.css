@@ -3,17 +3,22 @@
  * Tailwind included. All rights go to their respective owners.
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import "tailwindcss";
 
 @config "../../tailwind.config.js";
 
 @layer base {
-  *, ::after, ::before, ::backdrop, ::file-selector-button {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
   }
 
   :root {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', Avenir, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 16px;
     line-height: 24px;
     font-weight: 400;
@@ -21,114 +26,127 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    -webkit-text-size-adjust: 100%;
 
-    color: #0f0f0f;
-    background-color: #f6f6f6;
+    --bg-app: #fafafa;
+    --bg-window: #ffffff;
+    --bg-panel: #f4f4f5;
+    --bg-input: #ffffff;
 
-    --secondary: 220, 220, 220;
-    --tertiary: 189, 189, 189;
+    --border-subtle: #e4e4e7;
+    --border-strong: #d4d4d8;
+
+    --text-1: #18181b;
+    --text-2: #52525b;
+    --text-3: #a1a1aa;
+
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --accent-tint: #dbeafe;
+    --accent-text-on: #ffffff;
+
+    --running: #16a34a;
+    --danger: #dc2626;
+
+    color: var(--text-1);
+    background-color: var(--bg-app);
   }
 
-  a {
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
-    text-decoration: none;
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-app: #0d0d0f;
+      --bg-window: #16161a;
+      --bg-panel: #1d1e22;
+      --bg-input: #25262b;
+
+      --border-subtle: #2e2f35;
+      --border-strong: #3a3b42;
+
+      --text-1: #e8e8ea;
+      --text-2: #9a9ba1;
+      --text-3: #65666c;
+
+      --accent: #3b82f6;
+      --accent-hover: #60a5fa;
+      --accent-tint: rgba(59, 130, 246, 0.15);
+      --accent-text-on: #ffffff;
+
+      --running: #4ade80;
+      --danger: #f87171;
+    }
   }
 
   body {
-    @apply text-foreground;
-    background-color: #e8e8e8;
-    color: #0f0f0f;
-    overflow: hidden;
-    height: 100vh;
-    margin: 0;
-    padding: 0;
+    background-color: var(--bg-app);
+    color: var(--text-1);
   }
 
   input,
-  button,
-  select,
-  button[type="button"] {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.4em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #ffffff;
-    transition: border-color 0.25s;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-    outline: none;
-  }
-
-  input {
-    height: 100%;
-    width: 100%;
-    max-width: 200px;
-    border-radius: 6px;
-  }
-
-  select,
-  button[type="button"] {
-    outline: none;
-    border: none;
-  }
-
-  button,
   select {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-1);
+    border-radius: 6px;
+    padding: 0.4em 0.8em;
+    box-shadow: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  /* Ensure native selects use the themed background and text in dark mode */
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: var(--bg-input);
+    color: var(--text-1);
+    margin: 0.4em 1.2em;
+  }
+
+  /* Options need explicit styling in some browsers to avoid white bg/white text */
+  select option {
+    background-color: var(--bg-panel);
+    color: var(--text-1);
+  }
+
+  input:focus,
+  select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-tint);
+    outline: none;
+  }
+
+  button {
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-1);
+    border-radius: 6px;
+    padding: 0.5em 1em;
     cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s;
+  }
+
+  button:hover {
+    border-color: var(--border-strong);
+  }
+
+  button.primary {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-text-on);
+  }
+
+  button.primary:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+  }
+
+  button.danger {
+    background-color: var(--danger);
+    border-color: var(--danger);
+    color: #ffffff;
   }
 
   button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-  }
-
-  input[type="number"] {
-    appearance: textfield;
-    -moz-appearance: textfield;
-  }
-
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    appearance: none;
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  input,
-  button {
-    outline: none;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      color: #f6f6f6;
-      background-color: #2f2f2f;
-      --secondary: 43, 43, 43;
-      --tertiary: 28, 28, 28;
-    }
-
-    html,
-    body {
-      background-color: #202020;
-      color: #f6f6f6;
-    }
-
-    a:hover {
-      color: #24c8db;
-    }
-
-    input,
-    button,
-    button[type="button"] {
-      color: #ffffff;
-      background-color: #0f0f0f98;
-    }
-
-    button:active,
-    button[type="button"]:active {
-      background-color: #0f0f0f69;
-    }
   }
 }
