@@ -1,93 +1,49 @@
-use crate::inputs::MouseButton;
-use std::{
-    fs::{self, File},
-    sync::{Mutex, OnceLock},
-    thread,
-    time::{Duration, SystemTime},
-};
-use input_linux::{
-    EventKind, EventTime, InputEvent, InputId, Key, KeyEvent, KeyState, SynchronizeEvent,
-    UInputHandle,
-    sys::{BUS_USB, input_event},
-};
+use winapi::um::winuser;
+use std::marker::Copy;
 
-static DEVICE: OnceLock<Mutex<UInputHandle<File>>> = OnceLock::new();
+use crate::inputs::{ Action, MouseButton };
 
-fn button_to_key(button: MouseButton) -> Key {
-    match button {
-        MouseButton::Left => Key::ButtonLeft,
-        MouseButton::Middle => Key::ButtonMiddle,
-        MouseButton::Right => Key::ButtonRight,
+#[derive(Clone)]
+#[repr(transparent)]
+pub struct Input(winuser::INPUT);
+impl Input {
+    pub fn from_button(button: MouseButton) -> Input {
+        let mut input: winuser::INPUT = unsafe { std::mem::zeroed() };
+        input.type_ = winuser::INPUT_MOUSE;
+
+        let mi = unsafe { input.u.mi_mut() };
+        mi.dwFlags = match button {
+            MouseButton::Left => winuser::MOUSEEVENTF_LEFTDOWN | winuser::MOUSEEVENTF_LEFTUP,
+            MouseButton::Right => winuser::MOUSEEVENTF_RIGHTDOWN | winuser::MOUSEEVENTF_RIGHTUP,
+            MouseButton::Middle => winuser::MOUSEEVENTF_MIDDLEDOWN | winuser::MOUSEEVENTF_MIDDLEUP,
+        };
+
+        Input(input)
     }
 }
 
-fn now() -> EventTime {
-    let t = SystemTime::now()
-        .duration_since(SystemTime::UNIX_EPOCH)
-        .unwrap();
-    EventTime::new(t.as_secs() as i64, t.subsec_micros() as i64)
+pub trait Keylike: Copy {
+    fn produce_input(self, action: Action) -> Input;
 }
 
-fn device() -> Result<&'static Mutex<UInputHandle<File>>, String> {
-    if let Some(d) = DEVICE.get() {
-        return Ok(d);
+impl Keylike for MouseButton {
+    fn produce_input(self, _action: Action) -> Input {
+        Input::from_button(self)
     }
+}
 
-    // Open uinput. Needs write access (run as root or be in the `input` group).
-    let file = fs::OpenOptions::new()
-        .write(true)
-        .open("/dev/uinput")
-        .map_err(|e| format!("cannot open /dev/uinput (try as root): {e}"))?;
+#[inline(always)]
+pub fn send<K: Keylike>(key: K) {
+    let inputs = [key.produce_input(Action::Press), key.produce_input(Action::Release)];
+    send_inputs(&inputs);
+}
 
-    let handle = UInputHandle::new(file);
-
-    handle.set_evbit(EventKind::Key).map_err(|e| e.to_string())?;
-    handle
-        .set_evbit(EventKind::Synchronize)
-        .map_err(|e| e.to_string())?;
-    // Register every button we might send.
-    for key in [Key::ButtonLeft, Key::ButtonMiddle, Key::ButtonRight] {
-        handle.set_keybit(key).map_err(|e| e.to_string())?;
-    }
-
-    handle
-        .create(
-            &InputId {
-                bustype: BUS_USB,
-                vendor: 0x3232,
-                product: 0x5678,
-                version: 0x1234,
-            },
-            b"autoclicker",
-            0,
-            &[],
+fn send_inputs(inputs: impl AsRef<[Input]>) -> u32 {
+    unsafe {
+        winuser::SendInput(
+            inputs.as_ref().len() as _,
+            inputs.as_ref().as_ptr() as _,
+            std::mem::size_of::<winuser::INPUT>() as _
         )
-        .map_err(|e| e.to_string())?;
-
-    // Give the system a moment to register the device before the first click.
-    thread::sleep(Duration::from_millis(500));
-
-    Ok(DEVICE.get_or_init(|| Mutex::new(handle)))
-}
-
-/// Press and release the given mouse button once.
-pub fn send(button: MouseButton) -> Result<(), String> {
-    let key = button_to_key(button);
-    let handle = device()?.lock().map_err(|e| e.to_string())?;
-    send_key(&handle, key, KeyState::PRESSED)?;
-    send_key(&handle, key, KeyState::RELEASED)?;
-    Ok(())
-}
-
-fn send_key(handle: &UInputHandle<File>, key: Key, state: KeyState) -> Result<(), String> {
-    let events: [input_event; 2] = [
-        InputEvent::from(KeyEvent::new(now(), key, state))
-            .as_raw()
-            .to_owned(),
-        InputEvent::from(SynchronizeEvent::report(now()))
-            .as_raw()
-            .to_owned(),
-    ];
-    handle.write(&events).map_err(|e| e.to_string())?;
-    Ok(())
+    }
 }
