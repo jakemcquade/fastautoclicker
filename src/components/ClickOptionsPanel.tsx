@@ -1,6 +1,7 @@
 import { Pointer } from "lucide-react";
 
-import { OptionsState, Settings } from "../types";
+import { ClickType, MouseButton, OptionsState, Settings } from "../types";
+import Segmented from "./Segmented";
 
 export interface ClickOptionsPanelProps {
     optionsState: OptionsState;
@@ -18,27 +19,37 @@ export default function ClickOptionsPanel({ setSetting, optionsState, setOptions
     }
 
     return (
-        <div className="flex flex-col gap-1 bg-(--bg-panel) border border-(--border-subtle) rounded-xl p-2.5 w-full max-w-full">
-            <div className="flex gap-1 items-center">
-                <Pointer className="w-4 h-4" />
-                <span className="text-sm">Click Options</span>
+        <div className="panel flex flex-col gap-2 w-full max-w-full">
+            <div className="panel-title">
+                <Pointer className="w-3.5 h-3.5" />
+                Click Options
             </div>
 
-            <div className="flex gap-1 justify-between items-center">
-                <p className="text-sm">Mouse Button</p>
-                <select value={optionsState.mouse_button} onChange={(e) => update<"mouse_button">("mouse_button", parseInt(e.target.value))}>
-                    <option value="0">Left</option>
-                    <option value="2">Middle</option>
-                    <option value="1">Right</option>
-                </select>
+            <div className="flex flex-col gap-1">
+                <span className="text-xs text-(--text-3)">Mouse Button</span>
+                <Segmented<MouseButton>
+                    aria-label="Mouse button"
+                    value={optionsState.mouse_button}
+                    onChange={(v) => update("mouse_button", v)}
+                    options={[
+                        { label: "Left", value: MouseButton.Left },
+                        { label: "Middle", value: MouseButton.Middle },
+                        { label: "Right", value: MouseButton.Right },
+                    ]}
+                />
             </div>
-            
-            <div className="flex gap-1 justify-between items-center">
-                <p className="text-sm">Click Type</p>
-                <select value={optionsState.click_type} onChange={(e) => update<"click_type">("click_type", parseInt(e.target.value))}>
-                    <option value="0">Single</option>
-                    <option value="1">Double</option>
-                </select>
+
+            <div className="flex flex-col gap-1">
+                <span className="text-xs text-(--text-3)">Click Type</span>
+                <Segmented<ClickType>
+                    aria-label="Click type"
+                    value={optionsState.click_type}
+                    onChange={(v) => update("click_type", v)}
+                    options={[
+                        { label: "Single", value: ClickType.Single },
+                        { label: "Double", value: ClickType.Double },
+                    ]}
+                />
             </div>
         </div>
     );

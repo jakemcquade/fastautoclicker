@@ -1,4 +1,4 @@
-import { Pause, Play } from "lucide-react";
+import { Keyboard, Pause, Play, Circle } from "lucide-react";
 import type { MouseEvent } from "react";
 import { cn } from "../lib/util";
 
@@ -14,43 +14,51 @@ export interface ControlButtonsProps {
 export default function ControlButtons({
   active, isToggling, onToggle, hotkey, hotkeyOpen, setHotkeyOpen
 }: ControlButtonsProps) {
-  const buttonClass = "flex h-12.5 w-full justify-center items-center gap-2";
+  const actionBtn = "flex h-11 items-center justify-center gap-2 font-semibold rounded-[10px]";
 
   return (
-    <div className="grid grid-cols-2 gap-2">
-      <button
-        type="button"
-        className={cn(buttonClass, active ? "secondary" : "primary")}
-        onClick={(e) => onToggle(e)}
-        disabled={active || isToggling}
-      >
-        <span className="flex gap-1 items-center">
+    <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          className={cn(actionBtn, "btn-success")}
+          onClick={(e) => onToggle(e)}
+          disabled={active || isToggling}
+        >
           <Play className="h-5 w-5" />
-          Start
-        </span>
-        <small className="text-xs text-muted-foreground">{hotkey}</small>
-      </button>
+          <span>Start</span>
+          <kbd className="kbd">{hotkey}</kbd>
+        </button>
 
-      <button
-        type="button"
-        className={cn(buttonClass, active ? "danger" : "disabled")}
-        onClick={(e) => onToggle(e)}
-        disabled={!active || isToggling}
-      >
-        <Pause className="h-5 w-5" />
-        <span>Stop</span>
-        <small className="text-xs text-muted-foreground">
-          {hotkey}
-        </small>
-      </button>
+        <button
+          type="button"
+          className={cn(actionBtn, "danger")}
+          onClick={(e) => onToggle(e)}
+          disabled={!active || isToggling}
+        >
+          <Pause className="h-5 w-5" />
+          <span>Stop</span>
+          <kbd className="kbd">{hotkey}</kbd>
+        </button>
+      </div>
 
-      <button type="button" className={cn(buttonClass, hotkeyOpen ? "disabled" : "secondary")} onClick={() => setHotkeyOpen(!hotkeyOpen)}>
-        Configure Hotkey
-      </button>
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          className={cn("flex h-9 items-center justify-center gap-2 text-sm", hotkeyOpen && "primary")}
+          onClick={() => setHotkeyOpen(!hotkeyOpen)}
+        >
+          <Keyboard className="h-4 w-4" />
+          <span>Hotkey</span>
+          <kbd className="kbd">{hotkey}</kbd>
+        </button>
 
-      <button type="button" className={cn(buttonClass, "secondary")} disabled>
-        Record
-      </button>
+        <button type="button" className="flex h-9 items-center justify-center gap-2 text-sm" disabled>
+          <Circle className="h-4 w-4" />
+          <span>Record</span>
+          <span className="text-[0.6rem] uppercase tracking-wide text-(--text-3)">Soon</span>
+        </button>
+      </div>
     </div>
   )
 }
