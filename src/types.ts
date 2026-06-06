@@ -16,6 +16,7 @@ export interface Settings {
     click_type: ClickType;
     interval: number;
     hotkey: string;
+    repeat: number;
 }
 
 export interface IntervalState {
@@ -28,4 +29,10 @@ export interface IntervalState {
 export interface OptionsState {
     mouse_button: MouseButton;
     click_type: ClickType;
+}
+
+export type RepeatMode = "until_stopped" | "count";
+export interface RepeatState {
+    mode: RepeatMode;
+    count: number;
 }

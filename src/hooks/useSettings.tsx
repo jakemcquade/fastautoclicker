@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { commands } from "../lib/commands";
 import { Settings } from "../types";
 

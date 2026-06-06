@@ -11,9 +11,10 @@ export const commands = {
     }
 
     if (typeof value === "number") {
+      const u64Keys = name === "interval" || name === "repeat";
       return invoke("set_state", {
         name,
-        value: name === "interval" ? { U64: value } : { U8: value },
+        value: u64Keys ? { U64: value } : { U8: value },
       });
     }
 
