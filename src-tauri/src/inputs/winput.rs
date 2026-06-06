@@ -7,15 +7,18 @@ use crate::inputs::{ Action, MouseButton };
 #[repr(transparent)]
 pub struct Input(winuser::INPUT);
 impl Input {
-    pub fn from_button(button: MouseButton) -> Input {
+    pub fn from_button(button: MouseButton, action: Action) -> Input {
         let mut input: winuser::INPUT = unsafe { std::mem::zeroed() };
         input.type_ = winuser::INPUT_MOUSE;
 
         let mi = unsafe { input.u.mi_mut() };
-        mi.dwFlags = match button {
-            MouseButton::Left => winuser::MOUSEEVENTF_LEFTDOWN | winuser::MOUSEEVENTF_LEFTUP,
-            MouseButton::Right => winuser::MOUSEEVENTF_RIGHTDOWN | winuser::MOUSEEVENTF_RIGHTUP,
-            MouseButton::Middle => winuser::MOUSEEVENTF_MIDDLEDOWN | winuser::MOUSEEVENTF_MIDDLEUP,
+        mi.dwFlags = match (button, action) {
+            (MouseButton::Left, Action::Press) => winuser::MOUSEEVENTF_LEFTDOWN,
+            (MouseButton::Left, Action::Release) => winuser::MOUSEEVENTF_LEFTUP,
+            (MouseButton::Right, Action::Press) => winuser::MOUSEEVENTF_RIGHTDOWN,
+            (MouseButton::Right, Action::Release) => winuser::MOUSEEVENTF_RIGHTUP,
+            (MouseButton::Middle, Action::Press) => winuser::MOUSEEVENTF_MIDDLEDOWN,
+            (MouseButton::Middle, Action::Release) => winuser::MOUSEEVENTF_MIDDLEUP,
         };
 
         Input(input)
@@ -27,8 +30,14 @@ pub trait Keylike: Copy {
 }
 
 impl Keylike for MouseButton {
-    fn produce_input(self, _action: Action) -> Input {
-        Input::from_button(self)
+    fn produce_input(self, action: Action) -> Input {
+        Input::from_button(self, action)
+    }
+}
+
+pub fn set_position(x: i32, y: i32) {
+    unsafe {
+        winuser::SetCursorPos(x, y);
     }
 }
 
