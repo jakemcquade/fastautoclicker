@@ -12,7 +12,7 @@
   "bundle": {
     "shortDescription": "FastAutoClicker",
     "longDescription": "An open sourced, lightweight, and fast auto clicker designed with a sleek modern interface.",
-    "targets": ["deb", "msi", "app", "dmg"],
+    "targets": ["deb", "rpm", "appimage", "msi", "nsis", "app", "dmg"],
     "createUpdaterArtifacts": true,
     "category": "Utility",
     "resources": [],
