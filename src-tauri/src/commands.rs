@@ -1,16 +1,17 @@
 use tauri::Emitter;
 
-use crate::{AppState, modules};
+use crate::state::AppState;
+use crate::modules;
 
 #[tauri::command]
-pub fn app_toggle(state: tauri::State<AppState>) -> bool {
-    state.toggle_click_loop()
+pub fn app_toggle(app: tauri::AppHandle, state: tauri::State<AppState>) -> bool {
+    state.toggle_click_loop(app)
 }
 
 #[tauri::command]
 pub fn app_stop(state: tauri::State<AppState>) {
-    let mut status = state.status.lock().unwrap();
     let mut stop_interval = state.stop_interval.lock().unwrap();
+    let mut status = state.status.lock().unwrap();
     if !*status || stop_interval.is_none() {
         log::warn!("No click loop is running to stop.");
         return;
@@ -20,9 +21,8 @@ pub fn app_stop(state: tauri::State<AppState>) {
     *status = !*status;
 
     if let Some(tx) = stop_interval.take() {
-        if let Err(e) = tx.send(()) {
-            log::error!("Failed to send stop signal: {:?}", e.to_string());
-            std::process::exit(1);
+        if tx.send(()).is_err() {
+            log::warn!("Click loop already stopped; stop signal had no receiver.");
         }
     }
 
@@ -60,7 +60,11 @@ pub fn set_state(
         },
         "interval" => match value {
             modules::util::Value::U64(val) => {
-                modules::util::update_state(&state.interval, val);
+                if val < modules::util::MIN_INTERVAL_MS {
+                    return Err(format!("Interval must be at least {}ms.", modules::util::MIN_INTERVAL_MS));
+                }
+
+                modules::util::update_state(&state.interval, modules::util::sanitize_interval(val));
                 Ok(true)
             }
             _ => Err("Invalid value type for interval.".to_string()),
@@ -78,6 +82,13 @@ pub fn set_state(
                 Ok(true)
             }
             _ => Err("Invalid value type for click_type.".to_string()),
+        },
+        "repeat" => match value {
+            modules::util::Value::U64(val) => {
+                modules::util::update_state(&state.repeat_count, val);
+                Ok(true)
+            }
+            _ => Err("Invalid value type for repeat.".to_string()),
         },
         "click_location" => match value {
             modules::util::Value::String(val) => {
