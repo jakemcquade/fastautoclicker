@@ -4,6 +4,7 @@ version = "1.0.2"
 description = "An open sourced, lightweight, and fast auto clicker designed with a sleek modern interface."
 authors = ["jakemcquade"]
 edition = "2021"
+license = "GPL-3.0-only"
 
 [build-dependencies]
 tauri-build = { version = "^2", features = [] }
