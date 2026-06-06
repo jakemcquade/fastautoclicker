@@ -1,0 +1,13 @@
+# Normalize line endings. Text files are stored as LF in the repository and
+# checked out as LF on every OS, so they don't flip between CRLF/LF across
+# machines (e.g. editing on Windows vs Linux).
+* text=auto eol=lf
+
+# Binary assets: never apply text/EOL conversion.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.icns binary
