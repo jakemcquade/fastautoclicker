@@ -6,11 +6,11 @@ use core_graphics::{
 
 use crate::inputs::{ Action, MouseButton };
 pub trait Keylike: Copy {
-    fn produce_input(self, action: Action) -> CGEvent;
+    fn produce_input(self, action: Action, point: CGPoint) -> CGEvent;
 }
 
 impl Keylike for MouseButton {
-    fn produce_input(self, action: Action) -> CGEvent {
+    fn produce_input(self, action: Action, point: CGPoint) -> CGEvent {
         let event_type = match (self, action) {
             (MouseButton::Left, Action::Press) => CGEventType::LeftMouseDown,
             (MouseButton::Left, Action::Release) => CGEventType::LeftMouseUp,
@@ -26,7 +26,6 @@ impl Keylike for MouseButton {
             MouseButton::Middle => CGMouseButton::Center
         };
 
-        let point = get_mouse_position().expect("Failed to get mouse position.");
         let source = CGEventSource::new(CGEventSourceStateID::HIDSystemState).expect("Failed to create event source.");
         let event = CGEvent::new_mouse_event(source, event_type, point, button).expect("Failed to create mouse event.");
 
@@ -43,9 +42,14 @@ fn get_mouse_position() -> Option<CGPoint> {
 }
 
 #[inline(always)]
-pub fn send<K: Keylike>(key: K) {
-    let press_event = key.produce_input(Action::Press);
-    let release_event = key.produce_input(Action::Release);
+pub fn send<K: Keylike>(key: K, position: Option<(i32, i32)>) {
+    let point = match position {
+        Some((x, y)) => CGPoint::new(x as f64, y as f64),
+        None => get_mouse_position().expect("Failed to get mouse position."),
+    };
+
+    let press_event = key.produce_input(Action::Press, point);
+    let release_event = key.produce_input(Action::Release, point);
     press_event.post(CGEventTapLocation::HID);
     release_event.post(CGEventTapLocation::HID);
 }
