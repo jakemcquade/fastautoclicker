@@ -37,3 +37,6 @@ pub mod winput;
 
 #[cfg(target_os = "macos")]
 pub mod minput;
+
+#[cfg(target_os = "linux")]
+pub mod linput;

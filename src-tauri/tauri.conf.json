@@ -2,17 +2,17 @@
   "$schema": "https://schema.tauri.app/config/2.0.0",
   "productName": "FastAutoClicker",
   "identifier": ".jakemcquade.fastautoclicker",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "build": {
-    "beforeDevCommand": "yarn dev",
-    "beforeBuildCommand": "yarn build",
+    "beforeDevCommand": "bun run dev",
+    "beforeBuildCommand": "bun run build",
     "frontendDist": "../dist",
     "devUrl": "http://localhost:1420"
   },
   "bundle": {
     "shortDescription": "FastAutoClicker",
     "longDescription": "An open sourced, lightweight, and fast auto clicker designed with a sleek modern interface.",
-    "targets": ["deb", "msi", "app", "dmg"],
+    "targets": ["deb", "rpm", "appimage", "msi", "nsis", "app", "dmg"],
     "createUpdaterArtifacts": true,
     "category": "Utility",
     "resources": [],
@@ -64,15 +64,15 @@
       {
         "label": "main",
         "title": "FastAutoClicker",
-        "width": 440,
-        "height": 400,
+        "width": 500,
+        "height": 450,
         "shadow": true,
         "url": "index.html",
         "alwaysOnTop": true,
         "resizable": false,
         "fullscreen": false,
         "maximizable": false,
-        "decorations": false
+        "decorations": true
       }
     ]
   }
