@@ -11,7 +11,8 @@ pub struct ConfigStruct {
     pub mouse_button: u8,
     pub click_type: u8,
     pub hotkey: String,
-    pub interval: u64
+    pub interval: u64,
+    pub repeat: u64
 }
 
 impl Default for ConfigStruct {
@@ -20,22 +21,27 @@ impl Default for ConfigStruct {
             hotkey: "F6".to_string(),
             mouse_button: 0,
             click_type: 0,
-            interval: 100
+            interval: 100,
+            repeat: 0
         }
     }
 }
 
 #[tauri::command]
-pub fn get_settings() -> Result<String, ()> {
-    let config_dir = STORAGE.lock().unwrap();
-    Ok(fs::read_to_string(&format!("{}/settings.json", &config_dir)).unwrap())
+pub fn get_settings() -> Result<String, String> {
+    let config_dir = STORAGE.lock().map_err(|e| e.to_string())?;
+    let path = Path::new(config_dir.as_str()).join("settings.json");
+    fs::read_to_string(&path).map_err(|e| format!("Failed to read settings: {e}"))
 }
 
 #[tauri::command]
-pub async fn set_settings(file_content: String) {
-    let config_dir = STORAGE.lock().unwrap();
-    fs::write(&format!("{}/settings.json", &config_dir), file_content)
-        .expect("Unable to write file.");
+pub fn set_settings(file_content: String) -> Result<(), String> {
+    serde_json::from_str::<ConfigStruct>(&file_content)
+        .map_err(|e| format!("Invalid settings JSON: {e}"))?;
+
+    let config_dir = STORAGE.lock().map_err(|e| e.to_string())?;
+    let path = Path::new(config_dir.as_str()).join("settings.json");
+    fs::write(&path, &file_content).map_err(|e| format!("Failed to write settings: {e}"))
 }
 
 fn create_dir_if_not_exists(path: &str) {
@@ -59,7 +65,8 @@ pub fn init() -> Result<(), std::io::Error> {
         "hotkey": "F6",
         "mouse_button": 0,
         "click_type": 0,
-        "interval": 100
+        "interval": 100,
+        "repeat": 0
     }"#;
 
     let settings = &format!("{}/settings.json", &config_dir);
@@ -72,30 +79,20 @@ pub fn init() -> Result<(), std::io::Error> {
 
     let expected_keys = extract_keys(&expected_config);
     let actual_keys = extract_keys(&actual_config);
-    if actual_keys != expected_keys {
-        let missing_keys: Vec<&String> = expected_keys.iter().filter(|key| !actual_keys.contains(*key)).collect();
-        for key in &missing_keys {
-            let mut config: Value = serde_json::from_str(&fs::read_to_string(&settings).unwrap())?;
-            if let Some(value) = expected_config[key].as_str() {
-                if let Value::Object(ref mut obj) = config {
-                    obj.insert(key.to_string(), value.into());
-                }
-            } else if let Some(value) = expected_config[key].as_bool() {
-                if let Value::Object(ref mut obj) = config {
-                    obj.insert(key.to_string(), value.into());
-                }
-            } else if let Some(value) = expected_config[key].as_u64() {
-                if let Value::Object(ref mut obj) = config {
-                    obj.insert(key.to_string(), Value::from(value));
-                }
-            } else if let Some(value) = expected_config[key].as_i64() {
-                if let Value::Object(ref mut obj) = config {
-                    obj.insert(key.to_string(), Value::from(value));
-                }
-            }
+    let missing_keys: Vec<&String> = expected_keys
+        .iter()
+        .filter(|key| !actual_keys.contains(*key))
+        .collect();
 
-            fs::write(&settings, config.to_string())?;
+    if !missing_keys.is_empty() {
+        let mut config = actual_config;
+        if let Value::Object(ref mut obj) = config {
+            for key in missing_keys {
+                obj.insert(key.clone(), expected_config[key].clone());
+            }
         }
+
+        fs::write(settings, config.to_string())?;
     }
 
     Ok(())
